@@ -2,37 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use App\Models\Book;
+
 class BookController extends Controller
 {
-    private array $daftarBuku = [
-        1 => [
-            'judul' => 'Belajar PHP dari Nol',
-            'penulis' => 'Devi Wahyuni'
-        ],
-        2 => [
-            'judul' => 'Dasar Pemrograman Berorientasi Objek',
-            'penulis' => 'Jessica Rahayu'
-        ],
-        3 => [
-            'judul' => 'Pengantar Basis Data',
-            'penulis' => 'Dina Antari'
-        ],
-    ];
-
     public function index()
     {
         return view('buku.index', [
-            'daftarBuku' => $this->daftarBuku
+            'daftarBuku' => Book::with('category')->get(),
         ]);
     }
 
     public function show($id)
     {
-        $buku = $this->daftarBuku[$id] ?? null;
-
+        $buku = Book::with('category')->find($id);
         return view('buku.show', [
             'buku' => $buku,
-            'id' => $id
+            'id' => $id,
         ]);
     }
 }
