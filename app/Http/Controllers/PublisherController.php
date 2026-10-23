@@ -28,9 +28,9 @@ class PublisherController extends Controller
         ], [
             'name.required' => 'Nama penerbit wajib diisi.',
             'name.max' => 'Nama penerbit maksimal 100 karakter.',
-            'name.unique' => 'Nama penerbit ini sudah ada.',
+            'name.unique' => 'Nama penerbit ini sudah dipakai.',
             'city.required' => 'Kota penerbit wajib diisi.',
-            'city.max' => 'Kota penerbit maksimal 100 karakter.',
+            'city.max' => 'Nama kota maksimal 100 karakter.',
         ]);
 
         Publisher::create($validated);
@@ -61,9 +61,9 @@ class PublisherController extends Controller
         ], [
             'name.required' => 'Nama penerbit wajib diisi.',
             'name.max' => 'Nama penerbit maksimal 100 karakter.',
-            'name.unique' => 'Nama penerbit ini sudah ada.',
+            'name.unique' => 'Nama penerbit ini sudah dipakai.',
             'city.required' => 'Kota penerbit wajib diisi.',
-            'city.max' => 'Kota penerbit maksimal 100 karakter.',
+            'city.max' => 'Nama kota maksimal 100 karakter.',
         ]);
 
         $penerbit->update($validated);
