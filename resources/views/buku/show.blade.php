@@ -17,7 +17,7 @@
                 {{-- Kolom Gambar Sampul --}}
                 <div class="col-md-4 text-center mb-4 mb-md-0">
                     <img
-                        src="{{ asset('images/sampul-placeholder.png') }}"
+                        src="{{ asset('images/' . ($buku->cover_image ?? 'sampul-placeholder.png')) }}"
                         class="img-fluid rounded border"
                         alt="Sampul {{ $buku->title }}"
                         style="max-height: 320px; object-fit: contain;"

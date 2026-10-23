@@ -20,11 +20,12 @@
                     {{-- Container Gambar Sampul --}}
                     <div class="bg-white d-flex align-items-center justify-content-center p-3 rounded-top" style="height: 250px;">
                         <img
-                            src="{{ asset('images/sampul-placeholder.png') }}"
+                            src="{{ asset('images/' . ($buku->cover_image ?? 'sampul-placeholder.png')) }}"
                             class="img-fluid"
                             alt="Sampul {{ $buku->title }}"
                             style="max-height: 100%; object-fit: contain;"
-                        >
+>
+                        
                     </div>
 
                     {{-- Informasi Buku --}}
