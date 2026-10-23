@@ -17,6 +17,7 @@ class BookController extends Controller
     public function show($id)
     {
         $buku = Book::with('category')->find($id);
+
         return view('buku.show', [
             'buku' => $buku,
             'id' => $id,

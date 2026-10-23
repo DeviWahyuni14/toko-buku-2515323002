@@ -23,15 +23,15 @@ class BookSeeder extends Seeder
         ]);
         Book::create([
             'category_id' => 2,
-            'title' => 'Senja di Pelabuhan Kecil',
-            'author_name' => 'Made Dwijendra',
-            'price' => 68000,
+            'title' => 'Tentang Kamu',
+            'author_name' => 'Tere Liye',
+            'price' => 100000,
         ]);
         Book::create([
             'category_id' => 2,
-            'title' => 'Jalan Pulang ke Desa',
-            'author_name' => 'Ni Luh Putu Sari',
-            'price' => 64000,
+            'title' => 'Laut Bercerita',
+            'author_name' => 'Leila Salikha Chudori',
+            'price' => 125000,
         ]);
         Book::create([
             'category_id' => 3,
