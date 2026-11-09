@@ -1,20 +1,11 @@
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Buku — BookStore</title>
+@extends('layouts.app')
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body class="bg-light">
+@section('content')
 
 <div class="container my-5">
 
-    <!-- Judul dan Tombol Tambah Buku -->
+    {{-- Judul dan Tombol Tambah Buku --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold mb-0">Daftar Buku</h2>
 
@@ -23,10 +14,20 @@
         </a>
     </div>
 
-    <!-- Form Pencarian dan Filter -->
-    <form action="{{ route('buku.index') }}" method="GET" class="row g-2 mb-4">
+    {{-- Notifikasi --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show">
+            {{ session('success') }}
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
-        <!-- Pencarian Judul atau Penulis -->
+    {{-- Pencarian dan Filter --}}
+    <form action="{{ route('buku.index') }}"
+          method="GET"
+          class="row g-2 mb-4">
+
         <div class="col-md-4">
             <input
                 type="text"
@@ -37,49 +38,40 @@
             >
         </div>
 
-        <!-- Filter Kategori -->
         <div class="col-md-3">
             <select name="kategori" class="form-select">
                 <option value="">Semua kategori</option>
 
                 @foreach ($daftarKategori as $kategori)
-                    <option
-                        value="{{ $kategori->id }}"
-                        @selected($kategoriId == $kategori->id)
-                    >
+                    <option value="{{ $kategori->id }}"
+                        @selected($kategoriId == $kategori->id)>
                         {{ $kategori->name }}
                     </option>
                 @endforeach
             </select>
         </div>
 
-        <!-- Filter Penerbit -->
         <div class="col-md-3">
             <select name="penerbit" class="form-select">
                 <option value="">Semua penerbit</option>
 
                 @foreach ($daftarPenerbit as $penerbit)
-                    <option
-                        value="{{ $penerbit->id }}"
-                        @selected($penerbitId == $penerbit->id)
-                    >
+                    <option value="{{ $penerbit->id }}"
+                        @selected($penerbitId == $penerbit->id)>
                         {{ $penerbit->name }}
                     </option>
                 @endforeach
             </select>
         </div>
 
-        <!-- Tombol Cari dan Reset -->
         <div class="col-md-2 d-flex gap-2">
             <button type="submit" class="btn btn-primary">
                 Cari
             </button>
 
             @if ($kataKunci || $kategoriId || $penerbitId)
-                <a
-                    href="{{ route('buku.index') }}"
-                    class="btn btn-outline-secondary"
-                >
+                <a href="{{ route('buku.index') }}"
+                   class="btn btn-outline-secondary">
                     Reset
                 </a>
             @endif
@@ -87,7 +79,7 @@
 
     </form>
 
-    <!-- Jika Buku Tidak Ditemukan -->
+    {{-- Daftar Buku --}}
     @if ($daftarBuku->isEmpty())
 
         <div class="alert alert-info">
@@ -96,122 +88,148 @@
 
     @else
 
-        <!-- Informasi Jumlah Buku -->
-        <p class="text-muted small">
-            Menampilkan buku
-            {{ $daftarBuku->firstItem() }}
-            sampai
-            {{ $daftarBuku->lastItem() }}
-            dari
-            {{ $daftarBuku->total() }}
-            buku.
+        <p class="text-muted">
+            Menampilkan buku {{ $daftarBuku->firstItem() }}
+            sampai {{ $daftarBuku->lastItem() }}
+            dari {{ $daftarBuku->total() }} buku.
         </p>
 
-        <!-- Daftar Kartu Buku -->
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
 
             @foreach ($daftarBuku as $buku)
 
+                @php
+                    // Gambar bawaan untuk masing-masing buku lama
+                    $gambarBawaan = [
+                        'Belajar PHP dari Nol' => 'buku1.png',
+                        'Dasar Pemrograman Berorientasi Objek' => 'pbo.png',
+                        'Tentang Kamu' => 'tentang_kamu.png',
+                        'Laut Bercerita' => 'bercerita_karya.png',
+                        'Strategi Keuangan untuk Pemula' => 'keuangan_untuk_pemula.png',
+                        'Membaca Laporan Keuangan Sederhana' => 'keuangan_sederhana.png',
+                        'Bahasa Indonesia' => 'Indonesia.png',
+                        'Bahasa Inggris Untuk Pemula' => 'Inggris.png',
+                        'Melukis senja' => 'melukis.png',
+                    ];
+
+                    // Prioritaskan sampul hasil upload
+                    if ($buku->cover) {
+                        $gambarBuku = asset('storage/' . $buku->cover);
+                    } else {
+                        $namaGambar = $gambarBawaan[$buku->title]
+                            ?? 'sampul-placeholder.png';
+
+                        $gambarBuku = asset('images/' . $namaGambar);
+                    }
+                @endphp
+
                 <div class="col">
+
                     <div class="card h-100 shadow-sm border-0">
 
-                        <!-- Gambar Sampul Buku -->
-                        <div
-                            class="bg-white d-flex align-items-center justify-content-center p-3 rounded-top"
-                            style="height: 250px;"
-                        >
+                        {{-- Sampul Buku --}}
+                        <div class="bg-white d-flex align-items-center justify-content-center p-3 rounded-top"
+                             style="height: 350px;">
 
-                            @if ($buku->cover)
-                                <!-- Sampul hasil upload -->
-                                <img
-                                    src="{{ asset('storage/' . $buku->cover) }}?v={{ $buku->updated_at->timestamp }}"
-                                    class="img-fluid"
-                                    alt="Sampul {{ $buku->title }}"
-                                    style="max-height: 100%; max-width: 100%; object-fit: contain;"
-                                >
-
-                            @else
-                                <!-- Sampul bawaan -->
-                                <img
-                                    src="{{ asset('images/' . ($buku->cover_image ?? 'sampul-placeholder.png')) }}"
-                                    class="img-fluid"
-                                    alt="Sampul {{ $buku->title }}"
-                                    style="max-height: 100%; max-width: 100%; object-fit: contain;"
-                                >
-                            @endif
+                            <img
+                                src="{{ $gambarBuku }}"
+                                class="img-fluid"
+                                alt="Sampul {{ $buku->title }}"
+                                style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                            >
 
                         </div>
 
-                        <!-- Informasi Buku -->
-                        <div class="card-body d-flex flex-column bg-white rounded-bottom">
+                        {{-- Informasi Buku --}}
+                        <div class="card-body d-flex flex-column bg-white">
 
                             <div>
-
-                                <!-- Kategori -->
                                 <span class="badge bg-secondary mb-2">
                                     {{ $buku->category?->name ?? 'Belum ada kategori' }}
                                 </span>
 
-                                <!-- Judul Buku -->
-                                <h5
-                                    class="card-title fw-semibold text-truncate mb-1"
-                                    title="{{ $buku->title }}"
-                                >
+                                <h5 class="card-title fw-semibold mb-1">
                                     {{ $buku->title }}
                                 </h5>
 
-                                <!-- Penulis -->
-                                <p class="card-text text-muted small mb-2">
+                                <p class="text-muted small mb-2">
                                     {{ $buku->author_name }}
                                 </p>
 
-                                <!-- Penerbit -->
-                                <p class="card-text text-muted small mb-2">
+                                <p class="text-muted small mb-2">
                                     Penerbit:
                                     {{ $buku->publisher?->name ?? 'Belum diisi' }}
                                 </p>
-
                             </div>
 
                             <div class="mt-auto pt-2">
 
-                                <!-- Harga Buku -->
-                                <p class="card-text fw-bold text-primary fs-5 mb-2">
+                                {{-- Harga --}}
+                                <p class="fw-bold text-primary fs-5 mb-2">
                                     Rp{{ number_format($buku->price, 0, ',', '.') }}
                                 </p>
 
-                                <!-- Informasi Stok -->
+                                {{-- Stok --}}
                                 @if ($buku->stock > 0)
-                                    <p class="card-text small mb-3">
+                                    <p class="small mb-3">
                                         Stok: {{ $buku->stock }}
                                     </p>
                                 @else
-                                    <p class="card-text mb-3">
+                                    <p class="mb-3">
                                         <span class="badge bg-danger">
                                             Stok habis
                                         </span>
                                     </p>
                                 @endif
 
-                                <!-- Tombol Detail -->
-                                <a
-                                    href="{{ route('buku.show', $buku->id) }}"
-                                    class="btn btn-primary w-100"
-                                >
-                                    Lihat Detail
-                                </a>
+                                {{-- Tombol Aksi --}}
+                                <div class="d-grid gap-2">
+
+                                    <a href="{{ route('buku.show', $buku->id) }}"
+                                       class="btn btn-primary">
+                                        Lihat Detail
+                                    </a>
+
+                                    <div class="d-flex gap-2">
+
+                                        {{-- Edit --}}
+                                        <a href="{{ route('buku.edit', $buku->id) }}"
+                                           class="btn btn-warning w-50">
+                                            Edit
+                                        </a>
+
+                                        {{-- Hapus --}}
+                                        <form
+                                            action="{{ route('buku.destroy', $buku->id) }}"
+                                            method="POST"
+                                            class="w-50"
+                                            onsubmit="return confirm('Apakah kamu yakin ingin menghapus buku ini?')"
+                                        >
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit"
+                                                    class="btn btn-danger w-100">
+                                                Hapus
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </div>
 
                             </div>
 
                         </div>
+
                     </div>
+
                 </div>
 
             @endforeach
 
         </div>
 
-        <!-- Pagination -->
+        {{-- Pagination --}}
         <div class="mt-4">
             {{ $daftarBuku->links() }}
         </div>
@@ -220,5 +238,4 @@
 
 </div>
 
-</body>
-</html>
+@endsection
