@@ -120,21 +120,36 @@
                             class="bg-white d-flex align-items-center justify-content-center p-3 rounded-top"
                             style="height: 250px;"
                         >
-                            <img
-                                src="{{ asset('images/' . ($buku->cover_image ?? 'sampul-placeholder.png')) }}"
-                                class="img-fluid"
-                                alt="Sampul {{ $buku->title }}"
-                                style="max-height: 100%; object-fit: contain;"
-                            >
+
+                            @if ($buku->cover)
+                                <!-- Sampul hasil upload -->
+                                <img
+                                    src="{{ asset('storage/' . $buku->cover) }}?v={{ $buku->updated_at->timestamp }}"
+                                    class="img-fluid"
+                                    alt="Sampul {{ $buku->title }}"
+                                    style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                                >
+
+                            @else
+                                <!-- Sampul bawaan -->
+                                <img
+                                    src="{{ asset('images/' . ($buku->cover_image ?? 'sampul-placeholder.png')) }}"
+                                    class="img-fluid"
+                                    alt="Sampul {{ $buku->title }}"
+                                    style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                                >
+                            @endif
+
                         </div>
 
                         <!-- Informasi Buku -->
                         <div class="card-body d-flex flex-column bg-white rounded-bottom">
 
-                            <!-- Kategori -->
                             <div>
+
+                                <!-- Kategori -->
                                 <span class="badge bg-secondary mb-2">
-                                    {{ $buku->category->name }}
+                                    {{ $buku->category?->name ?? 'Belum ada kategori' }}
                                 </span>
 
                                 <!-- Judul Buku -->
@@ -189,7 +204,6 @@
                             </div>
 
                         </div>
-
                     </div>
                 </div>
 
