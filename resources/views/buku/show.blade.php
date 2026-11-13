@@ -1,6 +1,8 @@
 
 @extends('layouts.app')
 
+@section('title', 'Detail Buku — BookStore')
+
 @section('content')
 <div class="container mt-4">
 
@@ -38,20 +40,27 @@
             <!-- Judul Buku -->
             <h1>{{ $buku->title ?? 'Judul Belum Diisi' }}</h1>
 
-            <!-- Nama Penulis -->
+            <!-- Nama Penulis Lama -->
             <p class="text-muted mb-1">
                 Penulis: {{ $buku->author_name ?? '-' }}
             </p>
 
+            <!-- Penulis Terdaftar (FITUR BARU) -->
+            <p class="text-muted mb-1">
+                Penulis Terdaftar:
+                {{ $buku->author?->name ?? 'Belum dipilih' }}
+            </p>
+
             <!-- Penerbit -->
             <p class="text-muted mb-1">
-                Penerbit: {{ $buku->publisher?->name ?? 'belum diisi' }}
+                Penerbit:
+                {{ $buku->publisher?->name ?? 'Belum diisi' }}
             </p>
 
             <!-- Tahun Terbit -->
             @if ($buku->published_year)
                 <p class="text-muted mb-1">
-                    Tahun terbit: {{ $buku->published_year }}
+                    Tahun Terbit: {{ $buku->published_year }}
                 </p>
             @endif
 
@@ -63,7 +72,9 @@
             <!-- Informasi Stok Buku -->
             @if ($buku->stock > 0)
                 <p class="mb-3">
-                    Stok: {{ $buku->stock }}
+                    <span class="badge bg-success">
+                        Stok tersedia: {{ $buku->stock }}
+                    </span>
                 </p>
             @else
                 <p class="mb-3">

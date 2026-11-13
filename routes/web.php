@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,7 @@ Route::get('/buku/{buku}', [BookController::class, 'show'])->name('buku.show');
 Route::get('/buku/{buku}/edit', [BookController::class, 'edit'])->name('buku.edit');
 Route::put('/buku/{buku}', [BookController::class, 'update'])->name('buku.update');
 Route::delete('/buku/{buku}', [BookController::class, 'destroy'])->name('buku.destroy');
+Route::resource('penulis', AuthorController::class)->except(['show']);
 
 // Tambahkan rute penjelas nama agar navbar tidak error
 Route::get('/kategori', function () {

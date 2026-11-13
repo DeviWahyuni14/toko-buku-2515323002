@@ -6,6 +6,8 @@ use App\Models\Book;
 use App\Models\Category;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
+use App\Models\Author;
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -15,6 +17,7 @@ class BookController extends Controller
         return [
             'title' => 'required|string|max:255',
             'author_name' => 'required|string|max:255',
+            'author_id' => 'nullable|integer|exists:authors,id',
             'category_id' => 'required|exists:categories,id',
             'publisher_id' => 'required|exists:publishers,id',
             'price' => 'required|integer|min:0|max:99999999',
@@ -30,6 +33,7 @@ class BookController extends Controller
         return [
             'title.required' => 'Judul buku wajib diisi.',
             'author_name.required' => 'Nama penulis wajib diisi.',
+            'author_id' => 'nullable|integer|exists:authors,id',
             'category_id.required' => 'Kategori wajib dipilih.',
             'publisher_id.required' => 'Penerbit wajib dipilih.',
 
@@ -49,6 +53,8 @@ class BookController extends Controller
 
             'cover.image' => 'Berkas sampul harus berupa gambar.',
             'cover.max' => 'Ukuran berkas sampul maksimal 2 MB.',
+            'author_id.integer' => 'Pilihan penulis tidak valid.',
+            'author_id.exists' => 'Penulis yang dipilih tidak terdaftar.',
         ];
     }
 
@@ -89,11 +95,12 @@ class BookController extends Controller
     // Form tambah buku
     public function create()
     {
-        $categories = Category::all();
-        $publishers = Publisher::all();
-
-        return view('buku.create', compact('categories', 'publishers'));
-    }
+    return view('buku.create', [
+        'daftarKategori' => Category::orderBy('name')->get(),
+        'daftarPenerbit' => Publisher::orderBy('name')->get(),
+        'daftarPenulis' => Author::orderBy('name')->get(),
+    ]);
+}
 
     // Simpan buku baru
     public function store(Request $request)
@@ -129,26 +136,58 @@ class BookController extends Controller
     }
 
     // Form ubah buku
-    public function edit(Book $buku)
-    {
-        $categories = Category::all();
-        $publishers = Publisher::all();
+    public function edit($id)
+{
+    $buku = Book::findOrFail($id);
 
-        return view('buku.edit', compact('buku', 'categories', 'publishers'));
-    }
+    return view('buku.edit', [
+        'buku' => $buku,
+        'daftarKategori' => Category::orderBy('name')->get(),
+        'daftarPenerbit' => Publisher::orderBy('name')->get(),
+        'daftarPenulis' => Author::orderBy('name')->get(),
+    ]);
+}
 
     // Simpan perubahan buku
-    public function update(Request $request, Book $buku)
+   
+    // Simpan perubahan buku
+    public function update(Request $request, $id)
     {
-        $data = $request->validate($this->aturan(), $this->pesan());
+        // Ambil buku berdasarkan ID
+        $buku = Book::findOrFail($id);
 
+        // Validasi data yang dikirim form
+        $validated = $request->validate(
+            $this->aturan(),
+            $this->pesan()
+        );
+
+        // Proses cover secara terpisah
+        unset($validated['cover']);
+
+        $sampulLama = null;
+
+        // Jika pengguna mengunggah cover baru
         if ($request->hasFile('cover')) {
-            $data['cover'] = $request->file('cover')->store('covers', 'public');
+            $sampulLama = $buku->cover;
+
+            $validated['cover'] = $request
+                ->file('cover')
+                ->store('covers', 'public');
         }
 
-        $buku->update($data);
+        // Simpan perubahan termasuk author_id
+        $buku->update($validated);
 
-        return redirect('/buku/' . $buku->id)
-            ->with('success', 'Data buku berhasil diperbarui!');
+        // Hapus cover lama jika diganti
+        if ($sampulLama) {
+            Storage::disk('public')->delete($sampulLama);
+        }
+
+        // Kembali ke halaman detail buku
+        return redirect()
+            ->route('buku.show', $buku->id)
+            ->with('success', 'Buku berhasil diperbarui.');
     }
+
 }

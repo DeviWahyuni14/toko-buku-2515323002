@@ -22,6 +22,11 @@
                     Penerbit
                 </a>
             </li>
+            <li class="nav-item">
+    <a class="nav-link" href="{{ route('penulis.index') }}">
+        Penulis
+    </a>
+</li>
         </ul>
     </div>
 </nav>

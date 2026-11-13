@@ -37,6 +37,11 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+        
+        <div class="mb-3">
+        <label for="author_id" class="form-label">
+            Penulis Terdaftar (Opsional)
+        </label>
 
         <!-- Kategori Buku -->
         <div class="mb-3">
@@ -47,10 +52,10 @@
 
                 <option value="">-- Pilih Kategori --</option>
 
-                @foreach ($categories as $category)
-                    <option value="{{ $category->id }}"
-                        @selected(old('category_id') == $category->id)>
-                        {{ $category->name }}
+                @foreach ($daftarKategori as $kategori)
+                    <option value="{{ $kategori->id }}"
+                        @selected(old('category_id') == $kategori->id)>
+                        {{ $kategori->name }}
                     </option>
                 @endforeach
             </select>
@@ -69,12 +74,12 @@
 
                 <option value="">-- Pilih Penerbit --</option>
 
-                @foreach ($publishers as $publisher)
-                    <option value="{{ $publisher->id }}"
-                        @selected(old('publisher_id') == $publisher->id)>
-                        {{ $publisher->name }}
-                    </option>
-                @endforeach
+                @foreach ($daftarPenerbit as $penerbit)
+    <option value="{{ $penerbit->id }}"
+        @selected(old('publisher_id') == $penerbit->id)>
+        {{ $penerbit->name }}
+    </option>
+@endforeach
             </select>
 
             @error('publisher_id')
